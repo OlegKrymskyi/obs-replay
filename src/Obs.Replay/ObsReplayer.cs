@@ -86,6 +86,11 @@ namespace Obs.Replay
             ObsReplayLib.obs_add_raw_video_callback(IntPtr.Zero, callback, IntPtr.Zero);
         }
 
+        public void SaveReplay()
+        {
+            ObsReplayLib.obs_save_replay(this.replayBuffer);
+        }
+
         public Task StartAsync(ReplaySavedCallback callback, CancellationToken cancellationToken)
         {
             return Task.Run(() =>
