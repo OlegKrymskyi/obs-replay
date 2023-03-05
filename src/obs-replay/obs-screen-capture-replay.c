@@ -31,6 +31,11 @@ void obs_save_replay(obs_output_t* replay_buffer)
 	}
 }
 
+void obs_start_screen_capture(obs_output_t* replay_buffer)
+{
+
+}
+
 obs_output_t* obs_init_screen_capture_replay(
 	const char* data_path,
 	const char* module_path,
