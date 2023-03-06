@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Obs.Replay.Options;
 using static Obs.Replay.ObsReplayLib;
@@ -73,12 +74,17 @@ namespace Obs.Replay
             };
 
             this.replayBuffer = ObsReplayLib.obs_init_screen_capture_replay(
-                this.options.Value.DataPath,
-                this.options.Value.ModulesPath,
-                this.options.Value.ModulesDataPath,
+                Path.GetFullPath(this.options.Value.DataPath),
+                Path.GetFullPath(this.options.Value.ModulesPath),
+                Path.GetFullPath(this.options.Value.ModulesDataPath),
                 ref avi,
                 ref ovi,
                 this.options.Value.ReplaysPath);
+
+            if (this.replayBuffer == IntPtr.Zero)
+            {
+                throw new InvalidOperationException($"Obs replayer were not initialized");
+            }
         }
 
         public void SetRawVideoCallback(RawVideoCallback callback)

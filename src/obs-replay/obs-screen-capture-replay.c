@@ -1,5 +1,35 @@
 #include "obs-screen-capture-replay.h"
 
+void log_handler(int log_level, const char* format, va_list args, void* param)
+{
+	char out[4096];
+	vsnprintf(out, sizeof(out), format, args);
+
+	switch (log_level) {
+	case LOG_DEBUG:
+		fprintf(stdout, "debug: %s\n", out);
+		fflush(stdout);
+		break;
+
+	case LOG_INFO:
+		fprintf(stdout, "info: %s\n", out);
+		fflush(stdout);
+		break;
+
+	case LOG_WARNING:
+		fprintf(stdout, "warning: %s\n", out);
+		fflush(stdout);
+		break;
+
+	case LOG_ERROR:
+		fprintf(stderr, "error: %s\n", out);
+		fflush(stderr);
+	}
+
+	UNUSED_PARAMETER(param);
+}
+
+
 void obs_replay_saved_signal_callback(void* param, calldata_t* data)
 {
 	const char* value;
@@ -33,7 +63,11 @@ void obs_save_replay(obs_output_t* replay_buffer)
 
 void obs_start_screen_capture(obs_output_t* replay_buffer)
 {
-
+	bool outputStartSuccess = obs_output_start(replay_buffer);
+	printf("output successful: %d\n", outputStartSuccess);
+	if (outputStartSuccess != true) {
+		printf("output error: %s\n", obs_output_get_last_error(replay_buffer));
+	}
 }
 
 obs_output_t* obs_init_screen_capture_replay(
@@ -45,12 +79,14 @@ obs_output_t* obs_init_screen_capture_replay(
 	const char* replays_path)
 {
 	if (obs_initialized()) {
-		return -1;
+		return NULL;
 	}
+
+	base_set_log_handler(log_handler, NULL);
 
 	printf("libobs version: %s\n", obs_get_version_string());
 	if (!obs_startup("en-US", NULL, NULL)) {
-		return -1;
+		return NULL;
 	}
 	obs_add_data_path(data_path);
 	obs_add_module_path(module_path, module_data_path);
@@ -61,7 +97,7 @@ obs_output_t* obs_init_screen_capture_replay(
 
 	int resetVideoCode = obs_reset_video(&ovi);
 	if (resetVideoCode != OBS_VIDEO_SUCCESS) {
-		return -1;
+		return NULL;
 	}
 
 	obs_post_load_modules();
@@ -87,7 +123,7 @@ obs_output_t* obs_init_screen_capture_replay(
 	obs_encoder_t* audioEncoder = obs_audio_encoder_create("ffmpeg_aac", "simple_aac_recording", NULL, 0, NULL);
 
 	obs_data_t* outputSettings = obs_data_create();
-	obs_data_set_string(outputSettings, "directory", "c:\\temp\\replays");
+	obs_data_set_string(outputSettings, "directory", replays_path);
 	obs_data_set_int(outputSettings, "max_time_sec", 20);
 	obs_output_t* replayBuffer = obs_output_create("replay_buffer", "ReplayBuffer", outputSettings, NULL);
 	obs_data_release(outputSettings);

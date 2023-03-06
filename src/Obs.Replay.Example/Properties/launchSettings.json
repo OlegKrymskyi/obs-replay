@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Obs.Replay.Example": {
+      "commandName": "Project",
+      "nativeDebugging": true
+    }
+  }
+}
