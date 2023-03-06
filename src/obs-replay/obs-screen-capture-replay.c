@@ -37,6 +37,10 @@ void obs_replay_saved_signal_callback(void* param, calldata_t* data)
 	{
 		printf("replay saved at %s\n", value);
 	}
+	else
+	{
+		value = NULL;
+	}
 
 	obs_replay_saved_callback_t callback = (obs_replay_saved_callback_t)param;
 	if (callback != NULL)
@@ -93,9 +97,9 @@ obs_output_t* obs_init_screen_capture_replay(
 	obs_load_all_modules();
 	obs_log_loaded_modules();
 
-	bool resetAudioCode = obs_reset_audio(&avi);
+	bool resetAudioCode = obs_reset_audio(avi);
 
-	int resetVideoCode = obs_reset_video(&ovi);
+	int resetVideoCode = obs_reset_video(ovi);
 	if (resetVideoCode != OBS_VIDEO_SUCCESS) {
 		return NULL;
 	}
@@ -131,12 +135,12 @@ obs_output_t* obs_init_screen_capture_replay(
 	obs_encoder_set_video(videoEncoder, obs_get_video());
 	obs_set_output_source(0, videoSource); //0 = VIDEO CHANNEL
 	obs_output_set_video_encoder(replayBuffer, videoEncoder);
-	printf("video encoder active: %d", (videoEncoder != NULL));
+	printf("video encoder active: %d\n", (videoEncoder != NULL));
 
 	obs_encoder_set_audio(audioEncoder, obs_get_audio());
 	obs_set_output_source(1, audioSource); //1 = AUDIO CHANNEL
 	obs_output_set_audio_encoder(replayBuffer, audioEncoder, 0);
-	printf("audio encoder active: %d", (audioEncoder != NULL));
+	printf("audio encoder active: %d\n", (audioEncoder != NULL));
 
 	return replayBuffer;
 }

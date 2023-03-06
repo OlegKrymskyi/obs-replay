@@ -38,9 +38,9 @@ var callback = new ReplaySavedCallback((string path) =>
 });
 
 var replayTask = replayer.StartAsync(callback, source.Token);
-var delayTask = Task.Delay(10000, source.Token).ContinueWith((param) => {
+var delayTask = Task.Delay(10*1000, source.Token).ContinueWith((param) => {
     replayer.SaveReplay();
 }, source.Token);
 
-Task.WhenAll(replayTask, delayTask);
+await Task.WhenAll(replayTask, delayTask);
 
