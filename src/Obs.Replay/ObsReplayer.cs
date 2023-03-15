@@ -18,6 +18,8 @@ namespace Obs.Replay
 
         private IntPtr replayBuffer;
 
+        private IntPtr scaler;
+
         public ObsReplayer(IOptions<ObsOptions> options, ILogger<ObsReplayer> logger)
         {
             this.options = options;
@@ -43,6 +45,18 @@ namespace Obs.Replay
                 return;
             }
 
+            if (replayBuffer != IntPtr.Zero)
+            {
+                ObsReplayLib.obs_free_screen_capture_replay(replayBuffer);
+                this.replayBuffer = IntPtr.Zero;
+            }
+
+            if (scaler != IntPtr.Zero)
+            {
+                ObsReplayLib.obs_free_scaler(scaler);
+                this.scaler = IntPtr.Zero;
+            }
+
             this.manualResetEvent.Dispose();
 
             this.disposed = true;
@@ -66,7 +80,7 @@ namespace Obs.Replay
                 base_height = (uint)options.Value.Height,
                 output_width = (uint)options.Value.Width,
                 output_height = (uint)options.Value.Height,
-                output_format = video_format.VIDEO_FORMAT_RGBA,
+                output_format = video_format.VIDEO_FORMAT_NV12,
                 gpu_conversion = true,
                 colorspace = video_colorspace.VIDEO_CS_DEFAULT,
                 range = video_range_type.VIDEO_RANGE_DEFAULT,
@@ -85,6 +99,9 @@ namespace Obs.Replay
             {
                 throw new InvalidOperationException($"Obs replayer were not initialized");
             }
+
+            this.scaler = ObsReplayLib.obs_init_scaler(video_format.VIDEO_FORMAT_NV12, (uint)options.Value.Width, (uint)options.Value.Height,
+                video_format.VIDEO_FORMAT_BGR3, (uint)options.Value.Width, (uint)options.Value.Height);
         }
 
         public void SetRawVideoCallback(RawVideoCallback callback)
@@ -94,13 +111,21 @@ namespace Obs.Replay
 
         public void SaveReplay()
         {
+            this.logger.LogDebug($"Save Replay was called");
             ObsReplayLib.obs_save_replay(this.replayBuffer);
+        }
+
+        public void Pause(bool pause)
+        {
+            this.logger.LogDebug($"screen capture pause: {pause}");
+            ObsReplayLib.obs_pause_screen_capture(this.replayBuffer, true);
         }
 
         public Task StartAsync(ReplaySavedCallback callback, CancellationToken cancellationToken)
         {
             return Task.Run(() =>
             {
+                this.logger.LogDebug("screen capture started");
                 var width = this.options.Value.Width;
                 var height = this.options.Value.Height;
                 var fps = this.options.Value.Fps;
@@ -116,8 +141,11 @@ namespace Obs.Replay
 
                 while (!this.manualResetEvent.WaitOne(TimeSpan.FromMilliseconds(10000 * fps / fps), true) && !cancellationToken.IsCancellationRequested)
                 {
-                    
+                    // Do nothing
                 }
+
+                ObsReplayLib.obs_stop_screen_capture(this.replayBuffer);
+                this.logger.LogDebug("screen capture stoped");
             });
         }
     }

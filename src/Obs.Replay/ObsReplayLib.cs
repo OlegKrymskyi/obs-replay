@@ -1,4 +1,6 @@
-﻿using System.Runtime.InteropServices;
+﻿using System;
+using System.Runtime.InteropServices;
+using static Obs.Replay.ObsReplayLib;
 
 namespace Obs.Replay
 {
@@ -138,6 +140,16 @@ namespace Obs.Replay
         private const int MAX_AV_PLANES = 8;
 
         [StructLayout(LayoutKind.Sequential)]
+        public struct video_scale_info
+        {
+            public video_format format;
+            public uint width;
+            public uint height;
+            public video_range_type range;
+            public video_colorspace colorspace;
+        };
+
+        [StructLayout(LayoutKind.Sequential)]
         public struct video_data
         {
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = MAX_AV_PLANES)]
@@ -168,6 +180,13 @@ namespace Obs.Replay
         public static extern void obs_start_screen_capture(IntPtr replay_buffer);
 
         [DllImport("obs-replay")]
+        public static extern void obs_pause_screen_capture(IntPtr replay_buffer, bool pause);
+
+        [DllImport("obs-replay")]
+        public static extern void obs_stop_screen_capture(IntPtr replay_buffer);
+
+
+        [DllImport("obs-replay")]
         public static extern IntPtr obs_init_screen_capture_replay(
             string data_path, 
             string module_path, 
@@ -175,5 +194,18 @@ namespace Obs.Replay
             ref obs_audio_info avi, 
             ref obs_video_info ovi, 
             string replays_path);
+
+        [DllImport("obs-replay")]
+        public static extern void obs_free_screen_capture_replay(IntPtr replay_buffer);
+
+        [DllImport("obs-replay")]
+        public static extern IntPtr obs_init_scaler(video_format src_format, uint src_width, uint src_height, 
+            video_format dst_format, uint dst_width, uint dst_height);
+
+        [DllImport("obs-replay")]
+        public static extern void obs_free_scaler(IntPtr scaler);
+
+        [DllImport("obs-replay")]
+        public static extern IntPtr obs_scale_bgr(IntPtr scaler, IntPtr src, uint dst_width, uint dst_height);
     }
 }

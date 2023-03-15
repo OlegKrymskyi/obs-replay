@@ -74,6 +74,16 @@ void obs_start_screen_capture(obs_output_t* replay_buffer)
 	}
 }
 
+void obs_pause_screen_capture(obs_output_t* replay_buffer, bool pause)
+{
+	obs_output_pause(replay_buffer, pause);
+}
+
+void obs_stop_screen_capture(obs_output_t* replay_buffer)
+{
+	obs_output_stop(replay_buffer);
+}
+
 obs_output_t* obs_init_screen_capture_replay(
 	const char* data_path,
 	const char* module_path,
@@ -143,4 +153,43 @@ obs_output_t* obs_init_screen_capture_replay(
 	printf("audio encoder active: %d\n", (audioEncoder != NULL));
 
 	return replayBuffer;
+}
+
+void obs_free_screen_capture_replay(obs_output_t* replay_buffer)
+{
+	obs_output_release(replay_buffer);
+}
+
+video_scaler_t* obs_init_scaler(enum video_format src_format, uint32_t src_width, uint32_t src_height,
+	enum video_format dst_format, uint32_t dst_width, uint32_t dst_height)
+{
+	struct video_scale_info dst = {
+		dst_format, dst_width, dst_height, VIDEO_RANGE_DEFAULT, VIDEO_CS_DEFAULT
+	};
+	struct video_scale_info src = {
+		src_format, src_width, src_height, VIDEO_RANGE_DEFAULT, VIDEO_CS_DEFAULT
+	};
+
+	video_scaler_t* scaler = NULL;
+	video_scaler_create(&scaler, &dst, &src, VIDEO_SCALE_DEFAULT);
+	return scaler;
+}
+
+void obs_free_scaler(video_scaler_t* scaler)
+{
+	video_scaler_destroy(scaler);
+}
+
+video_data_t* obs_scale_bgr(video_scaler_t* scaler, video_data_t* src, uint32_t dst_width, uint32_t dst_height)
+{
+	uint32_t number_of_colors = 3;
+	video_data_t* dst = malloc(sizeof(video_data_t));
+	dst->data[0] = malloc(dst_width * dst_height * number_of_colors);
+	dst->linesize[0] = malloc(dst_height * number_of_colors);
+	if (!video_scaler_scale(scaler, dst->data, dst->linesize, src->data, src->linesize))
+	{
+		free(dst);
+	}
+	
+	return dst;
 }
