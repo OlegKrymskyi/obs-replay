@@ -1,7 +1,10 @@
 ﻿// See https://aka.ms/new-console-template for more information
+using Emgu.CV;
+using Emgu.CV.Structure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Obs.Replay;
 using Obs.Replay.Options;
 using static Obs.Replay.ObsReplayLib;
@@ -29,10 +32,18 @@ var provider = services.BuildServiceProvider();
 var source = new CancellationTokenSource();
 
 var replayer = provider.GetService<ObsReplayer>();
+var options = provider.GetService<IOptions<ObsOptions>>();
 
 replayer!.Initialize();
 
 replayer.ReplaySaved += Replayer_ReplaySaved;
+replayer.FrameRendered += Replayer_FrameRendered;
+
+void Replayer_FrameRendered(object? sender, video_data e)
+{
+    var img = new Image<Bgr, byte>(options.Value.Width, options.Value.Height, (int)e.linesize[0], e.data[0]);
+    // Image recognition here
+}
 
 void Replayer_ReplaySaved(object? sender, string e)
 {

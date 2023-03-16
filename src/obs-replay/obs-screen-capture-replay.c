@@ -192,7 +192,7 @@ video_data_t* obs_scale_bgr(video_scaler_t* scaler, video_data_t* src, uint32_t 
 	video_data_t* dst = calloc(1, sizeof(video_data_t));
 	dst->timestamp = src->timestamp;
 	dst->data[0] = malloc(dst_width * dst_height * number_of_colors);
-	dst->linesize[0] = dst_height * number_of_colors;
+	dst->linesize[0] = dst_width * number_of_colors;
 	if (!video_scaler_scale(scaler, dst->data, dst->linesize, src->data, src->linesize))
 	{
 		free(dst);
@@ -203,7 +203,7 @@ video_data_t* obs_scale_bgr(video_scaler_t* scaler, video_data_t* src, uint32_t 
 
 void obs_free_frame(video_data_t* frame)
 {
-	for (int i = 0; i < 8; i++)
+	for (int i = 0; i < MAX_AV_PLANES; i++)
 	{
 		if (frame->data[i] != NULL)
 		{
