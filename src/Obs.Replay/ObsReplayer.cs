@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Runtime.InteropServices;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Obs.Replay.Options;
@@ -8,6 +8,10 @@ namespace Obs.Replay
 {
     public class ObsReplayer : IDisposable
     {
+        public event EventHandler<string> ReplaySaved;
+
+        public event EventHandler<video_data> FrameRendered;
+
         private bool disposed;
 
         private readonly ILogger<ObsReplayer> logger;
@@ -20,11 +24,18 @@ namespace Obs.Replay
 
         private IntPtr scaler;
 
+        private readonly ObsReplayLib.ReplaySavedCallback replaySavedCallback;
+
+        private readonly ObsReplayLib.RawVideoCallbackNative rawVideoCallback;
+
         public ObsReplayer(IOptions<ObsOptions> options, ILogger<ObsReplayer> logger)
         {
             this.options = options;
             this.logger = logger;
             this.manualResetEvent = new ManualResetEvent(false);
+
+            this.replaySavedCallback = new ObsReplayLib.ReplaySavedCallback(this.ReplaySavedCallback);
+            this.rawVideoCallback = new ObsReplayLib.RawVideoCallbackNative(this.RawVideoCallback);
         }
 
         ~ObsReplayer()
@@ -44,6 +55,9 @@ namespace Obs.Replay
             {
                 return;
             }
+
+            obs_remove_replay_saved_callback(this.replayBuffer, this.replaySavedCallback);
+            obs_remove_raw_video_callback(this.rawVideoCallback, IntPtr.Zero);
 
             if (replayBuffer != IntPtr.Zero)
             {
@@ -100,13 +114,11 @@ namespace Obs.Replay
                 throw new InvalidOperationException($"Obs replayer were not initialized");
             }
 
+            ObsReplayLib.obs_add_replay_saved_callback(this.replayBuffer, this.replaySavedCallback);
+            ObsReplayLib.obs_add_raw_video_callback(IntPtr.Zero, this.rawVideoCallback, IntPtr.Zero);
+
             this.scaler = ObsReplayLib.obs_init_scaler(video_format.VIDEO_FORMAT_NV12, (uint)options.Value.Width, (uint)options.Value.Height,
                 video_format.VIDEO_FORMAT_BGR3, (uint)options.Value.Width, (uint)options.Value.Height);
-        }
-
-        public void SetRawVideoCallback(RawVideoCallback callback)
-        {
-            ObsReplayLib.obs_add_raw_video_callback(IntPtr.Zero, callback, IntPtr.Zero);
         }
 
         public void SaveReplay()
@@ -121,20 +133,14 @@ namespace Obs.Replay
             ObsReplayLib.obs_pause_screen_capture(this.replayBuffer, true);
         }
 
-        public Task StartAsync(ReplaySavedCallback callback, CancellationToken cancellationToken)
+        public Task StartAsync(CancellationToken cancellationToken)
         {
             return Task.Run(() =>
             {
                 this.logger.LogDebug("screen capture started");
                 var width = this.options.Value.Width;
                 var height = this.options.Value.Height;
-                var fps = this.options.Value.Fps;
-
-                // obs signals
-                if (callback != null)
-                {
-                    ObsReplayLib.obs_set_replay_saved_callback(this.replayBuffer, callback);
-                }
+                var fps = this.options.Value.Fps;                
 
                 // Start replay buffer
                 ObsReplayLib.obs_start_screen_capture(this.replayBuffer);
@@ -147,6 +153,27 @@ namespace Obs.Replay
                 ObsReplayLib.obs_stop_screen_capture(this.replayBuffer);
                 this.logger.LogDebug("screen capture stoped");
             });
+        }
+
+        private void ReplaySavedCallback(string file)
+        {
+            this.logger.LogDebug($"Replay saved to: {file}");
+            if (this.ReplaySaved != null)
+            {
+                this.ReplaySaved(this, file);
+            }
+        }
+
+        private void RawVideoCallback(IntPtr param, IntPtr streaming_frame, IntPtr recording_frame)
+        {
+            var framePtr = obs_scale_bgr(this.scaler, streaming_frame, (uint)this.options.Value.Width, (uint)this.options.Value.Height);
+            var frame = Marshal.PtrToStructure<video_data>(framePtr);
+            if (this.FrameRendered != null)
+            {
+                this.FrameRendered(this, frame);
+            }
+
+            obs_free_frame(framePtr);
         }
     }
 }

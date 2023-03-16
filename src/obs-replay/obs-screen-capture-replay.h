@@ -15,7 +15,9 @@ typedef void (*obs_replay_saved_callback_t)(const char* path);
 
 void obs_replay_saved_signal_callback(void* param, calldata_t* data);
 
-EXPORT void obs_set_replay_saved_callback(obs_output_t* replay_buffer, obs_replay_saved_callback_t callback);
+EXPORT void obs_add_replay_saved_callback(obs_output_t* replay_buffer, obs_replay_saved_callback_t callback);
+
+EXPORT void obs_remove_replay_saved_callback(obs_output_t* replay_buffer, obs_replay_saved_callback_t callback);
 
 EXPORT void obs_save_replay(obs_output_t* replay_buffer);
 
@@ -41,3 +43,5 @@ EXPORT video_scaler_t* obs_init_scaler(enum video_format src_format, uint32_t sr
 EXPORT void obs_free_scaler(video_scaler_t* scaler);
 
 EXPORT video_data_t* obs_scale_bgr(video_scaler_t* scaler, video_data_t* src, uint32_t dst_width, uint32_t dst_height);
+
+EXPORT void obs_free_frame(video_data_t* frame);

@@ -32,12 +32,15 @@ var replayer = provider.GetService<ObsReplayer>();
 
 replayer!.Initialize();
 
-var callback = new ReplaySavedCallback((string path) => 
-{
-    source.Cancel();
-});
+replayer.ReplaySaved += Replayer_ReplaySaved;
 
-var replayTask = replayer.StartAsync(callback, source.Token);
+void Replayer_ReplaySaved(object? sender, string e)
+{
+    Console.WriteLine($"ReplaySaved event handler");
+    source.Cancel();
+}
+
+var replayTask = replayer.StartAsync(source.Token);
 var delayTask = Task.Delay(10*1000, source.Token).ContinueWith((param) => {
     replayer.SaveReplay();
 }, source.Token);

@@ -49,10 +49,16 @@ void obs_replay_saved_signal_callback(void* param, calldata_t* data)
 	}
 }
 
-void obs_set_replay_saved_callback(obs_output_t* replay_buffer, obs_replay_saved_callback_t callback)
+void obs_add_replay_saved_callback(obs_output_t* replay_buffer, obs_replay_saved_callback_t callback)
 {
 	signal_handler_t* signals = obs_output_get_signal_handler(replay_buffer);
 	signal_handler_connect(signals, "saved", obs_replay_saved_signal_callback, callback);
+}
+
+void obs_remove_replay_saved_callback(obs_output_t* replay_buffer, obs_replay_saved_callback_t callback)
+{
+	signal_handler_t* signals = obs_output_get_signal_handler(replay_buffer);
+	signal_handler_disconnect(signals, "saved", obs_replay_saved_signal_callback, callback);
 }
 
 void obs_save_replay(obs_output_t* replay_buffer)
@@ -183,13 +189,26 @@ void obs_free_scaler(video_scaler_t* scaler)
 video_data_t* obs_scale_bgr(video_scaler_t* scaler, video_data_t* src, uint32_t dst_width, uint32_t dst_height)
 {
 	uint32_t number_of_colors = 3;
-	video_data_t* dst = malloc(sizeof(video_data_t));
+	video_data_t* dst = calloc(1, sizeof(video_data_t));
+	dst->timestamp = src->timestamp;
 	dst->data[0] = malloc(dst_width * dst_height * number_of_colors);
-	dst->linesize[0] = malloc(dst_height * number_of_colors);
+	dst->linesize[0] = dst_height * number_of_colors;
 	if (!video_scaler_scale(scaler, dst->data, dst->linesize, src->data, src->linesize))
 	{
 		free(dst);
 	}
 	
 	return dst;
+}
+
+void obs_free_frame(video_data_t* frame)
+{
+	for (int i = 0; i < 8; i++)
+	{
+		if (frame->data[i] != NULL)
+		{
+			free(frame->data[i]);
+		}
+	}
+	free(frame);
 }

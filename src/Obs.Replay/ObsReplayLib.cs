@@ -164,14 +164,29 @@ namespace Obs.Replay
         [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
         public delegate void RawVideoCallback(IntPtr param, video_data streaming_frame, video_data recording_frame);
 
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        public delegate void RawVideoCallbackNative(IntPtr param, IntPtr streaming_frame, IntPtr recording_frame);
+
         [DllImport("obs", CallingConvention = CallingConvention.Cdecl)]
         public static extern void obs_add_raw_video_callback(IntPtr conversion, RawVideoCallback callback, IntPtr param);
+
+        [DllImport("obs", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void obs_add_raw_video_callback(IntPtr conversion, RawVideoCallbackNative callback, IntPtr param);
+
+        [DllImport("obs", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void obs_remove_raw_video_callback(RawVideoCallback callback, IntPtr param);
+
+        [DllImport("obs", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void obs_remove_raw_video_callback(RawVideoCallbackNative callback, IntPtr param);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
         public delegate void ReplaySavedCallback(string path);
 
         [DllImport("obs-replay")]
-        public static extern void obs_set_replay_saved_callback(IntPtr replay_buffer, ReplaySavedCallback callback);
+        public static extern void obs_add_replay_saved_callback(IntPtr replay_buffer, ReplaySavedCallback callback);
+
+        [DllImport("obs-replay")]
+        public static extern void obs_remove_replay_saved_callback(IntPtr replay_buffer, ReplaySavedCallback callback);
 
         [DllImport("obs-replay")]
         public static extern void obs_save_replay(IntPtr replay_buffer);
@@ -184,7 +199,6 @@ namespace Obs.Replay
 
         [DllImport("obs-replay")]
         public static extern void obs_stop_screen_capture(IntPtr replay_buffer);
-
 
         [DllImport("obs-replay")]
         public static extern IntPtr obs_init_screen_capture_replay(
@@ -207,5 +221,8 @@ namespace Obs.Replay
 
         [DllImport("obs-replay")]
         public static extern IntPtr obs_scale_bgr(IntPtr scaler, IntPtr src, uint dst_width, uint dst_height);
+
+        [DllImport("obs-replay")]
+        public static extern IntPtr obs_free_frame(IntPtr frame);
     }
 }
