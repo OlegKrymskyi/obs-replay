@@ -28,6 +28,8 @@ namespace Obs.Replay
 
         private readonly ObsReplayLib.RawVideoCallbackNative rawVideoCallback;
 
+        private long frameCounter = 0;
+
         public ObsReplayer(IOptions<ObsOptions> options, ILogger<ObsReplayer> logger)
         {
             this.options = options;
@@ -137,6 +139,7 @@ namespace Obs.Replay
         {
             return Task.Run(() =>
             {
+                frameCounter = 0;
                 this.logger.LogDebug("screen capture started");
                 var width = this.options.Value.Width;
                 var height = this.options.Value.Height;
@@ -165,15 +168,25 @@ namespace Obs.Replay
         }
 
         private void RawVideoCallback(IntPtr param, IntPtr streaming_frame, IntPtr recording_frame)
-        {
-            var framePtr = obs_scale_bgr(this.scaler, streaming_frame, (uint)this.options.Value.Width, (uint)this.options.Value.Height);
-            var frame = Marshal.PtrToStructure<video_data>(framePtr);
+        {            
             if (this.FrameRendered != null)
             {
-                this.FrameRendered(this, frame);
+                // In this way we can control how much frames would we like to be processed.
+                // In some cases we might be interested to apply image recognition only once per second and twice per second.
+                // Then we could significaly reduce CPU utilization, as we won't make image scaling all the time.
+                var handleFrameRate = this.options.Value.Fps / (this.options.Value.NumberOfFramesScaledPerSecond.GetValueOrDefault(1));
+                if (frameCounter % handleFrameRate == 0)
+                {
+                    var framePtr = obs_scale_bgr(this.scaler, streaming_frame, (uint)this.options.Value.Width, (uint)this.options.Value.Height);
+                    var frame = Marshal.PtrToStructure<video_data>(framePtr);
+
+                    this.FrameRendered(this, frame);
+
+                    obs_free_frame(framePtr);
+                }
             }
 
-            obs_free_frame(framePtr);
+            frameCounter++;
         }
     }
 }

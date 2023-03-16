@@ -42,6 +42,7 @@ replayer.FrameRendered += Replayer_FrameRendered;
 void Replayer_FrameRendered(object? sender, video_data e)
 {
     var img = new Image<Bgr, byte>(options.Value.Width, options.Value.Height, (int)e.linesize[0], e.data[0]);
+    //img.Save($"c:\\temp\\replays\\{e.timestamp}.png");
     // Image recognition here
 }
 
@@ -52,7 +53,7 @@ void Replayer_ReplaySaved(object? sender, string e)
 }
 
 var replayTask = replayer.StartAsync(source.Token);
-var delayTask = Task.Delay(10*1000, source.Token).ContinueWith((param) => {
+var delayTask = Task.Delay(100*1000, source.Token).ContinueWith((param) => {
     replayer.SaveReplay();
 }, source.Token);
 
