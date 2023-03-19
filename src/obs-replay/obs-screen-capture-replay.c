@@ -136,7 +136,8 @@ obs_output_t* obs_init_screen_capture_replay(
 	obs_data_set_string(videoEncoderSettings, "rate_control", "CRF");
 	obs_data_set_int(videoEncoderSettings, "crf", 20);
 
-	obs_encoder_t* videoEncoder = obs_video_encoder_create("obs_x264", "simple_h264_recording", videoEncoderSettings, NULL);
+	obs_encoder_t* videoEncoder = obs_video_encoder_create("h265_texture_amf", "simple_h264_recording", videoEncoderSettings, NULL);
+	//obs_encoder_t* videoEncoder = obs_video_encoder_create("obs_x264", "simple_h264_recording", videoEncoderSettings, NULL);
 	obs_data_release(videoEncoderSettings);
 
 	// Setup audio capture
