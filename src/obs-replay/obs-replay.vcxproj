@@ -133,7 +133,9 @@
       <AdditionalLibraryDirectories>$(SolutionDir)\packed_build\bin\64bit</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /y $(SolutionDir)packed_build\bin\64bit\ $(OutDir) /E/C/H/I</Command>
+      <Command>xcopy /y $(SolutionDir)packed_build\bin\64bit\ $(OutDir) /E/C/H/I
+xcopy /y $(SolutionDir)packed_build\data $(OutDir)\data /E/C/H/I
+xcopy /y $(SolutionDir)packed_build\obs-plugins $(OutDir)\obs-plugins /E/C/H/I</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
