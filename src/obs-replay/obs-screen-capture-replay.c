@@ -123,7 +123,10 @@ obs_output_t* obs_init_screen_capture_replay(
 	obs_post_load_modules();
 
 	// Setup screen capture
-	obs_source_t* videoSource = obs_source_create("monitor_capture", "Monitor Capture Source", NULL, NULL);
+	obs_data_t* captureProps = obs_data_create();
+	obs_data_set_int(captureProps, "method", 2);
+	obs_data_set_bool(captureProps, "capture_cursor", false);
+	obs_source_t* videoSource = obs_source_create("monitor_capture", "Monitor Capture Source", captureProps, NULL);
 
 	// Setup video encoder
 	obs_data_t* videoEncoderSettings = obs_data_create();

@@ -88,7 +88,7 @@ namespace Obs.Replay
 
             obs_video_info ovi = new()
             {
-                adapter = 0,
+                adapter = 1,
                 graphics_module = "libobs-d3d11",
                 fps_num = (uint)this.options.Value.Fps,
                 fps_den = 1,
