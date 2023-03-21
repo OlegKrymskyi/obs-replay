@@ -36,7 +36,7 @@ int main()
         .data_path = "C:\\projects\\OlegKrymskyi\\obs-replay\\src\\x64\\Debug\\data\\libobs\\",
         .module_path = "C:\\projects\\OlegKrymskyi\\obs-replay\\src\\x64\\Debug\\obs-plugins\\64bit\\",
         .module_data_path = "C:\\projects\\OlegKrymskyi\\obs-replay\\src\\x64\\Debug\\data\\obs-plugins\\",
-        .video_encoder = "h265_texture_amf",
+        .video_encoder = "ffmpeg_nvenc",
         .max_time_sec = 20
     };
 
@@ -48,7 +48,11 @@ int main()
 
     obs_start_screen_capture(output);
 
-    Sleep(60*1000);
+    Sleep(10 * 1000);
+
+    obs_save_replay(output);
+
+    Sleep(10 * 1000);
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu

@@ -63,7 +63,7 @@ void obs_remove_replay_saved_callback(obs_output_t* replay_buffer, obs_replay_sa
 
 void obs_save_replay(obs_output_t* replay_buffer)
 {
-	calldata_t cd;
+	calldata_t cd = {0};
 	proc_handler_t* ph = obs_output_get_proc_handler(replay_buffer);
 	if (proc_handler_call(ph, "save", &cd))
 	{
@@ -128,11 +128,14 @@ obs_output_t* obs_init_screen_capture_replay(
 
 	// Setup video encoder
 	obs_data_t* videoEncoderSettings = obs_data_create();
-	obs_data_set_bool(videoEncoderSettings, "use_bufsize", true);
-	obs_data_set_string(videoEncoderSettings, "profile", "high");
-	obs_data_set_string(videoEncoderSettings, "preset", "veryfast");
-	obs_data_set_string(videoEncoderSettings, "rate_control", "CRF");
-	obs_data_set_int(videoEncoderSettings, "crf", 20);
+	if (strcmp(config->video_encoder, "obs_x264") == 0)
+	{
+		obs_data_set_bool(videoEncoderSettings, "use_bufsize", true);
+		obs_data_set_string(videoEncoderSettings, "profile", "high");
+		obs_data_set_string(videoEncoderSettings, "preset", "veryfast");
+		obs_data_set_string(videoEncoderSettings, "rate_control", "CRF");
+		obs_data_set_int(videoEncoderSettings, "crf", 20);
+	}
 
 	obs_encoder_t* videoEncoder = obs_video_encoder_create(config->video_encoder, "simple_h264_recording", videoEncoderSettings, NULL);
 	obs_data_release(videoEncoderSettings);

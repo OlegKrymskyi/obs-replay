@@ -108,7 +108,7 @@ namespace Obs.Replay
                 data_path = this.options.Value.DataPath,
                 module_path = this.options.Value.ModulesPath,
                 module_data_path = this.options.Value.ModulesDataPath,
-                video_encoder = "h265_texture_amf",
+                video_encoder = "ffmpeg_nvenc",
                 max_time_sec = 20
             };
 

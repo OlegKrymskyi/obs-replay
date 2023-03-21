@@ -53,7 +53,7 @@ void Replayer_ReplaySaved(object? sender, string e)
 }
 
 var replayTask = replayer.StartAsync(source.Token);
-var delayTask = Task.Delay(100*1000, source.Token).ContinueWith((param) => {
+var delayTask = Task.Delay(10*1000, source.Token).ContinueWith((param) => {
     replayer.SaveReplay();
 }, source.Token);
 
