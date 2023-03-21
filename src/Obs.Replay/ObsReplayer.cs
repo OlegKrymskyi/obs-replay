@@ -103,10 +103,17 @@ namespace Obs.Replay
                 scale_type = obs_scale_type.OBS_SCALE_BILINEAR
             };
 
+            obs_screen_capture_replay_config config = new()
+            {
+                data_path = this.options.Value.DataPath,
+                module_path = this.options.Value.ModulesPath,
+                module_data_path = this.options.Value.ModulesDataPath,
+                video_encoder = "h265_texture_amf",
+                max_time_sec = 20
+            };
+
             this.replayBuffer = ObsReplayLib.obs_init_screen_capture_replay(
-                Path.GetFullPath(this.options.Value.DataPath),
-                Path.GetFullPath(this.options.Value.ModulesPath),
-                Path.GetFullPath(this.options.Value.ModulesDataPath),
+                ref config,
                 ref avi,
                 ref ovi,
                 this.options.Value.ReplaysPath);

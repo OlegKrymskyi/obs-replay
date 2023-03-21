@@ -122,6 +122,16 @@ namespace Obs.Replay
             public speaker_layout speakers;
         };
 
+        [StructLayout(LayoutKind.Sequential)]
+        public struct obs_screen_capture_replay_config
+        {
+            public string data_path;
+            public string module_path;
+            public string module_data_path;
+            public string video_encoder;
+            public int max_time_sec;
+        }
+
         public enum speaker_layout : int
         {
             SPEAKERS_UNKNOWN,
@@ -202,9 +212,7 @@ namespace Obs.Replay
 
         [DllImport("obs-replay")]
         public static extern IntPtr obs_init_screen_capture_replay(
-            string data_path, 
-            string module_path, 
-            string module_data_path,
+            ref obs_screen_capture_replay_config config,
             ref obs_audio_info avi, 
             ref obs_video_info ovi, 
             string replays_path);

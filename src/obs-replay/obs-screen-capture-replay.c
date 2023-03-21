@@ -91,9 +91,7 @@ void obs_stop_screen_capture(obs_output_t* replay_buffer)
 }
 
 obs_output_t* obs_init_screen_capture_replay(
-	const char* data_path,
-	const char* module_path,
-	const char* module_data_path,
+	obs_screen_capture_replay_config_t* config,
 	obs_audio_info_t* avi,
 	obs_video_info_t* ovi,
 	const char* replays_path)
@@ -108,8 +106,8 @@ obs_output_t* obs_init_screen_capture_replay(
 	if (!obs_startup("en-US", NULL, NULL)) {
 		return NULL;
 	}
-	obs_add_data_path(data_path);
-	obs_add_module_path(module_path, module_data_path);
+	obs_add_data_path(config->data_path);
+	obs_add_module_path(config->module_path, config->module_data_path);
 	obs_load_all_modules();
 	obs_log_loaded_modules();
 
@@ -136,8 +134,7 @@ obs_output_t* obs_init_screen_capture_replay(
 	obs_data_set_string(videoEncoderSettings, "rate_control", "CRF");
 	obs_data_set_int(videoEncoderSettings, "crf", 20);
 
-	obs_encoder_t* videoEncoder = obs_video_encoder_create("h265_texture_amf", "simple_h264_recording", videoEncoderSettings, NULL);
-	//obs_encoder_t* videoEncoder = obs_video_encoder_create("obs_x264", "simple_h264_recording", videoEncoderSettings, NULL);
+	obs_encoder_t* videoEncoder = obs_video_encoder_create(config->video_encoder, "simple_h264_recording", videoEncoderSettings, NULL);
 	obs_data_release(videoEncoderSettings);
 
 	// Setup audio capture
@@ -148,7 +145,7 @@ obs_output_t* obs_init_screen_capture_replay(
 
 	obs_data_t* outputSettings = obs_data_create();
 	obs_data_set_string(outputSettings, "directory", replays_path);
-	obs_data_set_int(outputSettings, "max_time_sec", 20);
+	obs_data_set_int(outputSettings, "max_time_sec", config->max_time_sec);
 	obs_output_t* replayBuffer = obs_output_create("replay_buffer", "ReplayBuffer", outputSettings, NULL);
 	obs_data_release(outputSettings);
 

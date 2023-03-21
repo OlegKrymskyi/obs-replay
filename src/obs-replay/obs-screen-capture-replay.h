@@ -11,6 +11,14 @@ typedef struct obs_audio_info obs_audio_info_t;
 typedef struct obs_video_info obs_video_info_t;
 typedef struct video_data video_data_t;
 
+typedef struct obs_screen_capture_replay_config {
+	const char* data_path;
+	const char* module_path;
+	const char* module_data_path;
+	const char* video_encoder;
+	int max_time_sec;
+} obs_screen_capture_replay_config_t;
+
 typedef void (*obs_replay_saved_callback_t)(const char* path);
 
 void obs_replay_saved_signal_callback(void* param, calldata_t* data);
@@ -28,9 +36,7 @@ EXPORT void obs_pause_screen_capture(obs_output_t* replay_buffer, bool pause);
 EXPORT void obs_stop_screen_capture(obs_output_t* replay_buffer);
 
 EXPORT obs_output_t* obs_init_screen_capture_replay(
-	const char* data_path, 
-	const char* module_path, 
-	const char* module_data_path,
+	obs_screen_capture_replay_config_t* config,
 	obs_audio_info_t* avi,
 	obs_video_info_t* ovi,
 	const char* replays_path);

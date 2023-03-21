@@ -31,10 +31,17 @@ int main()
         .scale_type = OBS_SCALE_BILINEAR
     };
 
+    obs_screen_capture_replay_config_t config =
+    {
+        .data_path = "C:\\projects\\OlegKrymskyi\\obs-replay\\src\\x64\\Debug\\data\\libobs\\",
+        .module_path = "C:\\projects\\OlegKrymskyi\\obs-replay\\src\\x64\\Debug\\obs-plugins\\64bit\\",
+        .module_data_path = "C:\\projects\\OlegKrymskyi\\obs-replay\\src\\x64\\Debug\\data\\obs-plugins\\",
+        .video_encoder = "h265_texture_amf",
+        .max_time_sec = 20
+    };
+
     obs_output_t* output = obs_init_screen_capture_replay(
-        "C:\\projects\\OlegKrymskyi\\obs-replay\\src\\x64\\Debug\\data\\libobs\\",
-        "C:\\projects\\OlegKrymskyi\\obs-replay\\src\\x64\\Debug\\obs-plugins\\64bit\\",
-        "C:\\projects\\OlegKrymskyi\\obs-replay\\src\\x64\\Debug\\data\\obs-plugins\\",
+        &config,
         &avi,
         &ovi,
         "c:\\temp\\replays");
