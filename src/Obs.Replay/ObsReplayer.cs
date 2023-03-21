@@ -88,8 +88,8 @@ namespace Obs.Replay
 
             obs_video_info ovi = new()
             {
-                adapter = 1,
-                graphics_module = "libobs-d3d11",
+                adapter = this.options.Value.Adapter,
+                graphics_module = this.options.Value.GraphicsModule,
                 fps_num = (uint)this.options.Value.Fps,
                 fps_den = 1,
                 base_width = (uint)options.Value.Width,
@@ -108,8 +108,11 @@ namespace Obs.Replay
                 data_path = this.options.Value.DataPath,
                 module_path = this.options.Value.ModulesPath,
                 module_data_path = this.options.Value.ModulesDataPath,
-                video_encoder = "ffmpeg_nvenc",
-                max_time_sec = 20
+                video_encoder = this.options.Value.VideoEncoder,
+                audio_encoder = this.options.Value.AudioEncoder,
+                video_source = this.options.Value.VideoSource,
+                audio_source = this.options.Value.AudioSource,
+                max_time_sec = this.options.Value.MaxReplaySec
             };
 
             this.replayBuffer = ObsReplayLib.obs_init_screen_capture_replay(

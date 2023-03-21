@@ -122,16 +122,6 @@ namespace Obs.Replay
             public speaker_layout speakers;
         };
 
-        [StructLayout(LayoutKind.Sequential)]
-        public struct obs_screen_capture_replay_config
-        {
-            public string data_path;
-            public string module_path;
-            public string module_data_path;
-            public string video_encoder;
-            public int max_time_sec;
-        }
-
         public enum speaker_layout : int
         {
             SPEAKERS_UNKNOWN,
@@ -170,6 +160,19 @@ namespace Obs.Replay
 
             public ulong timestamp;
         };
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct obs_screen_capture_replay_config
+        {
+            public string data_path;
+            public string module_path;
+            public string module_data_path;
+            public string video_encoder;
+            public string audio_encoder;
+            public string video_source;
+            public string audio_source;
+            public int max_time_sec;
+        }
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
         public delegate void RawVideoCallback(IntPtr param, video_data streaming_frame, video_data recording_frame);

@@ -16,6 +16,9 @@ typedef struct obs_screen_capture_replay_config {
 	const char* module_path;
 	const char* module_data_path;
 	const char* video_encoder;
+	const char* audio_encoder;
+	const char* video_source;
+	const char* audio_source;
 	int max_time_sec;
 } obs_screen_capture_replay_config_t;
 

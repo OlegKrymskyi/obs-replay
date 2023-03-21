@@ -1,4 +1,7 @@
-﻿namespace Obs.Replay.Options
+﻿using Microsoft.Extensions.Options;
+using static Obs.Replay.ObsReplayLib;
+
+namespace Obs.Replay.Options
 {
     public class ObsOptions
     {
@@ -12,10 +15,24 @@
 
         public int Fps { get; set; }
 
+        public int? NumberOfFramesScaledPerSecond { get; set; } = 1;
+
         public int Width { get; set; }
 
         public int Height { get; set; }
 
-        public int? NumberOfFramesScaledPerSecond { get; set; } = 1;
+        public uint Adapter { get; set; }
+
+        public string GraphicsModule { get; set; }
+
+        public string VideoEncoder { get; set; }
+
+        public string AudioEncoder { get; set; }
+
+        public string VideoSource { get; set; }
+
+        public string AudioSource { get; set; }
+
+        public int MaxReplaySec { get; set; }
     }
 }

@@ -37,6 +37,9 @@ int main()
         .module_path = "C:\\projects\\OlegKrymskyi\\obs-replay\\src\\x64\\Debug\\obs-plugins\\64bit\\",
         .module_data_path = "C:\\projects\\OlegKrymskyi\\obs-replay\\src\\x64\\Debug\\data\\obs-plugins\\",
         .video_encoder = "ffmpeg_nvenc",
+        .audio_encoder = "ffmpeg_aac",
+        .video_source = "monitor_capture",
+        .audio_source = "wasapi_output_capture",
         .max_time_sec = 20
     };
 
