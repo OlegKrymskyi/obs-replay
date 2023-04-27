@@ -11,5 +11,5 @@ All the plugings will be loaded dynamically.
 
 ![Folder structure](/docs/assets/img/libobs-package.png)
 
-Next step would configuration:
+Next step would be configuration:
 [configuration](/docs/configuration.md)

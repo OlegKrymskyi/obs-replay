@@ -4,7 +4,7 @@ Lets imagine that you have trained image recognition network which can indentify
 
 Then you would like to make a replay according to the most spectaculler moment of a game.
 
-In this case, you can use libOBS to keep in-memory buffer with the latest 20 secs of a captured game, and then, whenever, AI recognized that currently you have "spectacular" moment, you can send libOBS a command that it is time to flush the buffer.
+In this case, you can use libOBS to keep in-memory buffer with the latest 20 secs of a captured game, and then, whenever, AI recognized that currently you have "spectacular" moment, you can send libOBS a command that it is time to store the buffer.
 
 This lib allow you to do that and more over, it is already wrapped with the dotnet which makes development much easier.
 

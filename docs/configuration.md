@@ -1,6 +1,6 @@
 # Configuration
 
-First of all you would need to configurate an ouput format of a future replay:
+First of all you would need to configure an output format of a future replay:
 ```
     // Everything is simple of audio.
     // Standard audio format capturing.
