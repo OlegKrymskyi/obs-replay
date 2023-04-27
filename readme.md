@@ -1,7 +1,7 @@
 # OBS Replay lib
 
 ## Overview
-This library allows to generate replay using libobs library. Overall, OBS implements efficient way of the screen capturing with the high FPS.
+This library allows to generate replay using libobs library. Overall, OBS implements efficient way of the screen capturing with the high FPS the same a continious video buffer. Besides, this library contains a dotnet wrapped which allowsto have much more simplier interface for iteracting with the libOBS.
 
 MS Windows provides a several API for that, probably the most efficient is a Screen Duplication API, which is using DirectX undernise. However, only OBS provides a complete solution which allows to capture screen with the stable FPS level.
 
