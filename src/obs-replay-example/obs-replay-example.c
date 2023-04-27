@@ -2,6 +2,7 @@
 //
 
 #include <windows.h>
+#include <stdlib.h>
 #include <obs-screen-capture-replay.h>
 
 #pragma comment (lib, "obs-replay.lib")
@@ -31,11 +32,23 @@ int main()
         .scale_type = OBS_SCALE_BILINEAR
     };
 
+    const char dataPath[MAX_PATH];
+    _fullpath(dataPath, "data\\libobs\\", MAX_PATH);
+    printf("OBS lib full path (%s)\n", dataPath);
+    
+    const char modulePath[MAX_PATH];
+    _fullpath(modulePath, "obs-plugins\\64bit\\", MAX_PATH);
+    printf("OBS plugins full path (%s)\n", modulePath);
+
+    const char moduleDataPath[MAX_PATH];
+    _fullpath(moduleDataPath, "data\\obs-plugins\\", MAX_PATH);
+    printf("OBS plugins data full path (%s)\n", moduleDataPath);
+
     obs_screen_capture_replay_config_t config =
     {
-        .data_path = "C:\\projects\\OlegKrymskyi\\obs-replay\\src\\x64\\Debug\\data\\libobs\\",
-        .module_path = "C:\\projects\\OlegKrymskyi\\obs-replay\\src\\x64\\Debug\\obs-plugins\\64bit\\",
-        .module_data_path = "C:\\projects\\OlegKrymskyi\\obs-replay\\src\\x64\\Debug\\data\\obs-plugins\\",
+        .data_path = dataPath,
+        .module_path = modulePath,
+        .module_data_path = moduleDataPath,
         .video_encoder = "ffmpeg_nvenc",
         .audio_encoder = "ffmpeg_aac",
         .video_source = "monitor_capture",
@@ -58,13 +71,3 @@ int main()
     Sleep(10 * 1000);
 }
 
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
-
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
