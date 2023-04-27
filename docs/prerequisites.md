@@ -9,7 +9,7 @@ Pay attention, that libOBS is a core of the OBS but without any UI.
 libOBS consists from libOBS core library and the plugings + plugins configuration files.
 All the plugings will be loaded dynamically. 
 
-![Folder structure](/assets/img/libobs-package.png)
+![Folder structure](/docs/assets/img/libobs-package.png)
 
 Next step would configuration:
 [configuration](/docs/configuration.md)
